@@ -9,9 +9,26 @@ import SwiftUI
 
 @main
 struct EasyClassScheduleApp: App {
+    @StateObject var store = ScheduleStore()
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(){
+                Task {
+                    do {
+                        try await store.save()
+                    } catch {
+                        fatalError(error.localizedDescription)
+                    }
+                }
+            }
+                .environmentObject(store)
+                .task {
+                    do {
+                        try await store.load()
+                    } catch {
+                        fatalError(error.localizedDescription)
+                    }
+                }
         }
     }
 }
