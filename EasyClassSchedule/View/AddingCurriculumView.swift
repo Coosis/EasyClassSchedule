@@ -8,19 +8,42 @@
 import SwiftUI
 
 struct AddingCurriculumView: View {
+    @EnvironmentObject var store : ScheduleStore
     var preferences : Preferences
+    var delete : Bool
+    let saveAction: ()->Void
+    func deleteAction(){
+        if let _ = store.curriculums[curriculumName] {
+            store.curriculums.removeValue(forKey: curriculumName)
+        }
+        showingSheet = false
+        saveAction()
+    }
+    @Binding var showingSheet : Bool
     @Binding var newCurriculum : Curriculum
     @State var curriculumName : String
     @State var startingWeek : Int
     @State var endingWeek : Int
     @State var lectures : [Lecture]
     @State var theme : Theme
+    
+    func givenName(name : String) {
+        if let curriculum = store.curriculums[curriculumName] {
+            startingWeek = curriculum.startingWeek
+            endingWeek = curriculum.endingWeek
+            lectures = curriculum.lectures
+            theme = curriculum.theme
+        }
+    }
+    
     var body: some View {
         Form {
             Section("Curriculum Name"){
                 TextField("", text: $curriculumName)
-                    .onSubmit {
+                    .onChange(of: curriculumName) { oldv, newv in
                         newCurriculum.name = curriculumName
+                        
+                        givenName(name: curriculumName)
                     }
             }
             Section("Curriculum Time"){
@@ -42,6 +65,23 @@ struct AddingCurriculumView: View {
                     newCurriculum.endingWeek = endingWeek
                 }
             }
+            Section("Theme") {
+                Picker("Theme Color", selection: $theme) {
+                    ForEach(Theme.allCases, id: \.id) { t in
+                        Text(t.name)
+                            .padding(4)
+                            .frame(maxWidth: .infinity)
+                            .foregroundColor(t.accentColor)
+                            .background(t.mainColor)
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                            .tag(t)
+                    }
+                }
+                .pickerStyle(.navigationLink)
+                .onChange(of: theme){
+                    newCurriculum.theme = theme
+                }
+            }
             Section("Lectures"){
                 ForEach(0...lectures.count-1, id: \.self) { i in
                     HStack{
@@ -59,7 +99,8 @@ struct AddingCurriculumView: View {
                         }
                         .pickerStyle(.wheel)
                         .frame(maxHeight: 80)
-                        Picker("From", selection: $lectures[i].from) {
+                        Text("From")
+                        Picker("", selection: $lectures[i].from) {
                             ForEach(1...preferences.days, id: \.self) { i in
                                 Text("\(i)").tag(i)
                             }
@@ -69,7 +110,8 @@ struct AddingCurriculumView: View {
                         }
                         .pickerStyle(.wheel)
                         .frame(maxHeight: 80)
-                        Picker("To", selection: $lectures[i].to) {
+                        Text("To")
+                        Picker("", selection: $lectures[i].to) {
                             ForEach(lectures[i].from...preferences.days, id: \.self) { i in
                                 Text("\(i)").tag(i)
                             }
@@ -80,13 +122,30 @@ struct AddingCurriculumView: View {
                         .pickerStyle(.wheel)
                         .frame(maxHeight: 80)
                     }
+                    .swipeActions {
+                        Button(role: .destructive) {
+                            lectures.remove(at: i)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
                 }
                 Button{
                     lectures.append(Lecture.newLecture())
                 } label: {
                     HStack {
                         Image(systemName: "plus")
-                        Text("Add Section")
+                        Text("Add Lecture")
+                    }
+                }
+            }
+            if delete {
+                Section("Delete Curriculum"){
+                    Button{
+                        deleteAction()
+                    } label: {
+                        Text("Delete this curriculum")
+                            .foregroundStyle(.red)
                     }
                 }
             }
@@ -95,5 +154,6 @@ struct AddingCurriculumView: View {
 }
 
 #Preview {
-    AddingCurriculumView(preferences: Preferences(), newCurriculum: .constant(Curriculum.newCurriculum()), curriculumName: "new curriculum", startingWeek: 1, endingWeek: 1, lectures: [Lecture.newLecture()], theme: Theme.cblue)
+    AddingCurriculumView(preferences: Preferences(), delete: false, saveAction: {}, showingSheet: .constant(true), newCurriculum: .constant(Curriculum.newCurriculum()), curriculumName: "curriculum name", startingWeek: 1, endingWeek: 1, lectures: [Lecture.newLecture()], theme: Theme.cblue)
+        .environmentObject(ScheduleStore())
 }

@@ -31,17 +31,41 @@ struct ScheduleDetailFormView: View {
                     }
             }
             Section("Number of Weeks") {
-                TextField("Number of weeks", text: $stringNumWeeks, onCommit: {
+                TextField("Number of weeks", text: $stringNumWeeks)
+                .onSubmit {
                     if let numweeks = Int(stringNumWeeks) {
                         preferences.weeks = numweeks
                     }
                     stringNumWeeks = String(preferences.weeks)
-                })
-                    .keyboardType(.numberPad)
+                }
+                .keyboardType(.numberPad)
+            }
+            Section("Section Theme"){
+                Picker("Theme Color", selection: $preferences.theme) {
+                    ForEach(Theme.allCases, id: \.id) { t in
+                        Text(t.name)
+                            .padding(4)
+//                            .frame(maxWidth: .infinity)
+                            .foregroundColor(t.accentColor)
+                            .background(t.mainColor)
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                            .tag(t)
+                    }
+                }
+                .pickerStyle(.navigationLink)
             }
             Section("Sections"){
-                ForEach(0...timeTable.count-1, id: \.self) { i in
-                    SectionTimeEditView(section: $timeTable[i])
+                if timeTable.count > 0 {
+                    ForEach(0...timeTable.count-1, id: \.self) { i in
+                        SectionTimeEditView(section: $timeTable[i])
+                            .swipeActions {
+                                Button(role: .destructive) {
+                                    timeTable.remove(at: i)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                    }
                 }
                 Button{
                     timeTable.append(SectionTime.newSection())
@@ -51,6 +75,10 @@ struct ScheduleDetailFormView: View {
                         Text("Add Section")
                     }
                 }
+//                ScrollView{
+//                    LazyVStack(){
+//                    }
+//                }
             }
         }
     }

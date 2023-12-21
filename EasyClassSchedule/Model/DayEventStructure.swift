@@ -14,6 +14,7 @@ struct Event : Identifiable, Codable{
     let EventName : String
     let from : Int
     let to : Int
+    let theme : Theme
     
     func EventTimeString(timeTable : [SectionTime]) -> String {
         let formatter = DateFormatter()
@@ -25,12 +26,13 @@ struct Event : Identifiable, Codable{
         return "\(start)-\(end)"
     }
     
-    init(filler : Bool, EventName : String, from : Int, to : Int){
+    init(filler : Bool, EventName : String, from : Int, to : Int, theme : Theme){
         self.id = UUID()
         self.filler = filler
         self.EventName = EventName
         self.from = from
         self.to = to
+        self.theme = theme
     }
 }
 
@@ -69,48 +71,51 @@ struct SectionTime : Codable{
         let dc2 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 8, minute: 45)
         let dc3 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 8, minute: 50)
         let dc4 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 9, minute: 35)
-        let dc5 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 9, minute: 50)
-        let dc6 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 10, minute: 35)
-        let dc7 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 10, minute: 40)
-        let dc8 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 11, minute: 25)
-        let dc9 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 11, minute: 30)
-        let dc10 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 12, minute: 15)
-        let dc11 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 14, minute: 0)
-        let dc12 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 14, minute: 45)
-        let dc13 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 14, minute: 50)
-        let dc14 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 15, minute: 35)
-        let dc15 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 15, minute: 50)
-        let dc16 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 16, minute: 35)
-        let dc17 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 16, minute: 40)
-        let dc18 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 17, minute: 25)
-        let dc19 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 18, minute: 30)
-        let dc20 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 19, minute: 15)
-        let dc21 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 19, minute: 20)
-        let dc22 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 20, minute: 5)
-        let dc23 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 20, minute: 10)
-        let dc24 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 20, minute: 55)
-        let dc25 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 21, minute: 40)
-        let dc26 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 22, minute: 25)
+//        let dc5 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 9, minute: 50)
+//        let dc6 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 10, minute: 35)
+//        let dc7 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 10, minute: 40)
+//        let dc8 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 11, minute: 25)
+//        let dc9 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 11, minute: 30)
+//        let dc10 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 12, minute: 15)
+//        let dc11 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 14, minute: 0)
+//        let dc12 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 14, minute: 45)
+//        let dc13 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 14, minute: 50)
+//        let dc14 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 15, minute: 35)
+//        let dc15 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 15, minute: 50)
+//        let dc16 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 16, minute: 35)
+//        let dc17 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 16, minute: 40)
+//        let dc18 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 17, minute: 25)
+//        let dc19 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 18, minute: 30)
+//        let dc20 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 19, minute: 15)
+//        let dc21 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 19, minute: 20)
+//        let dc22 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 20, minute: 5)
+//        let dc23 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 20, minute: 10)
+//        let dc24 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 20, minute: 55)
+//        let dc25 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 21, minute: 40)
+//        let dc26 = DateComponents(timeZone: yearmonthday.timeZone, era: yearmonthday.era, year: yearmonthday.year, month: yearmonthday.month, day: yearmonthday.day, hour: 22, minute: 25)
         
         let sec1 = SectionTime(start: calendar.date(from: dc1) ?? Date(), end: calendar.date(from: dc2) ?? Date())
         let sec2 = SectionTime(start: calendar.date(from: dc3) ?? Date(), end: calendar.date(from: dc4) ?? Date())
-        let sec3 = SectionTime(start: calendar.date(from: dc5) ?? Date(), end: calendar.date(from: dc6) ?? Date())
-        let sec4 = SectionTime(start: calendar.date(from: dc7) ?? Date(), end: calendar.date(from: dc8) ?? Date())
-        let sec5 = SectionTime(start: calendar.date(from: dc9) ?? Date(), end: calendar.date(from: dc10) ?? Date())
+//        let sec3 = SectionTime(start: calendar.date(from: dc5) ?? Date(), end: calendar.date(from: dc6) ?? Date())
+//        let sec4 = SectionTime(start: calendar.date(from: dc7) ?? Date(), end: calendar.date(from: dc8) ?? Date())
+//        let sec5 = SectionTime(start: calendar.date(from: dc9) ?? Date(), end: calendar.date(from: dc10) ?? Date())
+//        
+//        let sec6 = SectionTime(start: calendar.date(from: dc11) ?? Date(), end: calendar.date(from: dc12) ?? Date())
+//        let sec7 = SectionTime(start: calendar.date(from: dc13) ?? Date(), end: calendar.date(from: dc14) ?? Date())
+//        let sec8 = SectionTime(start: calendar.date(from: dc15) ?? Date(), end: calendar.date(from: dc16) ?? Date())
+//        let sec9 = SectionTime(start: calendar.date(from: dc17) ?? Date(), end: calendar.date(from: dc18) ?? Date())
+//        let sec10 = SectionTime(start: calendar.date(from: dc19) ?? Date(), end: calendar.date(from: dc20) ?? Date())
+//        
+//        let sec11 = SectionTime(start: calendar.date(from: dc21) ?? Date(), end: calendar.date(from: dc22) ?? Date())
+//        let sec12 = SectionTime(start: calendar.date(from: dc23) ?? Date(), end: calendar.date(from: dc24) ?? Date())
+//        let sec13 = SectionTime(start: calendar.date(from: dc25) ?? Date(), end: calendar.date(from: dc26) ?? Date())
         
-        let sec6 = SectionTime(start: calendar.date(from: dc11) ?? Date(), end: calendar.date(from: dc12) ?? Date())
-        let sec7 = SectionTime(start: calendar.date(from: dc13) ?? Date(), end: calendar.date(from: dc14) ?? Date())
-        let sec8 = SectionTime(start: calendar.date(from: dc15) ?? Date(), end: calendar.date(from: dc16) ?? Date())
-        let sec9 = SectionTime(start: calendar.date(from: dc17) ?? Date(), end: calendar.date(from: dc18) ?? Date())
-        let sec10 = SectionTime(start: calendar.date(from: dc19) ?? Date(), end: calendar.date(from: dc20) ?? Date())
-        
-        let sec11 = SectionTime(start: calendar.date(from: dc21) ?? Date(), end: calendar.date(from: dc22) ?? Date())
-        let sec12 = SectionTime(start: calendar.date(from: dc23) ?? Date(), end: calendar.date(from: dc24) ?? Date())
-        let sec13 = SectionTime(start: calendar.date(from: dc25) ?? Date(), end: calendar.date(from: dc26) ?? Date())
-        
-        return [sec1, sec2, sec3, sec4, sec5, sec6, sec7, sec8, sec9, sec10, sec11, sec12, sec13]
+//        return [sec1, sec2, sec3, sec4, sec5, sec6, sec7, sec8, sec9, sec10, sec11, sec12, sec13]
+        return [sec1, sec2]
     }
 }
+
+
 
 struct DayEventStructure : Identifiable, Codable{
     var id : UUID
@@ -139,7 +144,7 @@ struct DayEventStructure : Identifiable, Codable{
                 j += 1
             }
             else {
-                filledEvents.append(Event(filler: true, EventName: "Filler", from: i, to: i))
+                filledEvents.append(Event(filler: true, EventName: "Filler", from: i, to: i, theme: .cwhite))
             }
             i += 1
         }
@@ -150,7 +155,7 @@ struct DayEventStructure : Identifiable, Codable{
 
 let DayEventStructureSamples : DayEventStructure = DayEventStructure(timeTable : SectionTime.samples(),
     events: [
-        Event(filler: false, EventName: "高等数学", from: 1, to: 1),
-        Event(filler: false, EventName: "大学英语", from: 3, to: 3),
-        Event(filler: false, EventName: "程序设计", from: 4, to: 5)
+        Event(filler: false, EventName: "高等数学", from: 1, to: 1, theme: .cblue),
+        Event(filler: false, EventName: "大学英语", from: 3, to: 3, theme: .cgreen),
+        Event(filler: false, EventName: "程序设计", from: 4, to: 5, theme: .corange)
 ])

@@ -15,8 +15,8 @@ struct ScheduleHeaderView: View {
     var body: some View {
         HStack{
             Button{
-                adding = true
                 addAction()
+                adding = true
             } label: {
                 Text("Add")
             }
@@ -27,8 +27,8 @@ struct ScheduleHeaderView: View {
                 .padding()
             Spacer()
             Button{
-                editing = true
                 editAction()
+                editing = true
             } label: {
                 Text("Edit")
             }

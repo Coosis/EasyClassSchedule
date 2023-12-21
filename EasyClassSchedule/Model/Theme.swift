@@ -28,7 +28,9 @@ enum Theme: String, CaseIterable, Identifiable, Codable{
     }
     
     var name: String {
-        rawValue.capitalized
+        let rawName = rawValue.capitalized
+        let startIndex = rawName.index(after: rawName.startIndex)
+        return String(rawValue.capitalized[startIndex..<rawName.endIndex])
     }
     
     var id: String{

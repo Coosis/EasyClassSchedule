@@ -9,12 +9,17 @@ import SwiftUI
 
 struct DayHeaderView: View {
     let dateString : String
+    let weekString : String
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 4)
                 .foregroundStyle(Color.black)
             VStack{
                 Text(dateString)
+                    .font(.subheadline .italic())
+//                    .font()
+                    .foregroundStyle(Color.white)
+                Text(weekString)
                     .foregroundStyle(Color.white)
             }
         }
@@ -22,5 +27,5 @@ struct DayHeaderView: View {
 }
 
 #Preview {
-    DayHeaderView(dateString: "12.12")
+    DayHeaderView(dateString: "12.12", weekString: "Mon")
 }

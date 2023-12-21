@@ -10,6 +10,7 @@ import SwiftUI
 struct Preferences : Codable{
     let height : Double
     let spacing : Double
+    var theme : Theme
     
     var enableWeekEnds : Bool
     var days : Int {
@@ -23,6 +24,7 @@ struct Preferences : Codable{
         self.height = 50
         self.spacing = 10
         self.enableWeekEnds = true
+        self.theme = .cpurple
         let calendar = Calendar.current
         var date = Date()
         var componentsBefore = calendar.dateComponents([.year, .month, .day], from: date)

@@ -9,12 +9,13 @@ import Foundation
 import SwiftUI
 
 struct ScheduleGridView: View {
+    let onTap : (String)->Void
+    @Binding var editing : Bool
     @EnvironmentObject var store : ScheduleStore
     let weekdays : [String] = ["Mon", "Tue", "Wen", "Thu", "Fri"]
     let weekends : [String] = ["Sat", "Sun"]
     @State var enableWeekends : Bool
     @State var week : Int
-//    @State var days : [DayEventStructure]
     var scheduledDays : [String] {
         enableWeekends ? weekdays + weekends : weekdays
     }
@@ -43,7 +44,7 @@ struct ScheduleGridView: View {
                 if curriculum.startingWeek <= week && curriculum.endingWeek >= week {
                     for lecture in curriculum.lectures {
                         if lecture.day == day {
-                            events.append(Event(filler: false, EventName: curriculum.name, from: lecture.from, to: lecture.to))
+                            events.append(Event(filler: false, EventName: curriculum.name, from: lecture.from, to: lecture.to, theme: curriculum.theme))
                         }
                     }
                 }
@@ -53,17 +54,15 @@ struct ScheduleGridView: View {
         return computedDays
     }
     
-    init(enableWeekends : Bool, week : Int) {
-        self.enableWeekends = enableWeekends
-        self.week = week
-    }
-    
-    func getDateString(numWeek : Int, numDays : Int) -> String {
+    func getDateString(numWeek : Int, numDays : Int) -> [String] {
         let calendar = Calendar.current
         let currentDate = calendar.date(byAdding: .day, value: (numWeek-1)*7 + (numDays-1), to: store.preferences.startingDate)
         let formatter = DateFormatter()
-        formatter.dateFormat = "M.d E"
-        return formatter.string(from: currentDate ?? Date())
+        formatter.dateFormat = "M.d"
+        let dateString = formatter.string(from: currentDate ?? Date())
+        formatter.dateFormat = "E"
+        let weekString = formatter.string(from: currentDate ?? Date())
+        return [dateString, weekString]
     }
     
     var body: some View {
@@ -82,21 +81,23 @@ struct ScheduleGridView: View {
                     
                     
                     ForEach(1...num_scheduledDays, id:\.self) { i in
-                        DayHeaderView(dateString: getDateString(numWeek: week, numDays: i))
+                        let res = getDateString(numWeek: week, numDays: i)
+                        DayHeaderView(dateString: res[0], weekString: res[1])
                     }
                 }
                 GridRow{
                     VStack(spacing: store.preferences.spacing){
                         if store.timeTable.count > 0 {
                             ForEach(1...store.timeTable.count, id:\.self){ j in
-                                EventTimeView(time: store.timeTable[j-1].timeString, color: .purple)
+                                EventTimeView(time: store.timeTable[j-1].timeString, theme: store.preferences.theme, onTap: { editing = true })
                             }
                         }
                     }
                     
                     ForEach(1...num_scheduledDays, id:\.self){ i in
                         if i-1 >= 0 && i-1 < days.count {
-                            DayEventView(dayStructure: days[i-1])
+                            DayEventView(onTap: onTap, dayStructure: days[i-1])
+                                .environmentObject(store)
                         }
                     }
                 }
@@ -107,6 +108,6 @@ struct ScheduleGridView: View {
 }
 
 #Preview {
-    ScheduleGridView(enableWeekends: true, week: 19)
+    ScheduleGridView(onTap: { name in }, editing: .constant(true), enableWeekends: true, week: 19)
         .environmentObject(ScheduleStore())
 }

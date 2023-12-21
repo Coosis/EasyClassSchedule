@@ -9,6 +9,7 @@ import SwiftUI
 
 struct DayEventView: View {
     @EnvironmentObject var store : ScheduleStore
+    let onTap : (String)-> Void
     var heightPerEvent : Double {
         store.preferences.height
     }
@@ -16,6 +17,7 @@ struct DayEventView: View {
         store.preferences.spacing
     }
     let dayStructure : DayEventStructure
+    
     var body: some View {
         VStack(spacing: spacing){
             //actual block height: (number of section) * heightPerEvent + (number of section-1) * Spacing
@@ -25,13 +27,14 @@ struct DayEventView: View {
                 let block_occupied_height : Double = fnum_section * heightPerEvent
                 let spacing_occupied_height : Double = spacing * (fnum_section-1)
                 let height : Double = block_occupied_height + spacing_occupied_height
-                EventRectangle(height: height, color: Color.green, eventName: event.EventName, eventTime: event.EventTimeString(timeTable: store.timeTable), visible: !event.filler)
+                let color : Theme = event.theme
+                EventRectangle(onTap: onTap, height: height, theme: color, eventName: event.EventName, eventTime: event.EventTimeString(timeTable: store.timeTable), visible: !event.filler)
             }
         }
     }
 }
 
 #Preview {
-    DayEventView(dayStructure: DayEventStructureSamples)
+    DayEventView(onTap : { name in }, dayStructure: DayEventStructureSamples)
         .environmentObject(ScheduleStore())
 }

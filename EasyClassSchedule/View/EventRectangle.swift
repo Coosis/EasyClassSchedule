@@ -8,17 +8,24 @@
 import SwiftUI
 
 struct EventRectangle: View {
+    let onTap : (String)->Void
     let height : Double
-    let color : Color
+    let theme : Theme
     let eventName : String
     let eventTime : String
     let visible : Bool
     var body: some View {
         ZStack {
             if visible {
-                RoundedRectangle(cornerRadius: 4)
-                    .foregroundStyle(color)
-                EventDetailView(eventName: eventName, eventTime: eventTime)
+                Button{
+                    onTap(eventName)
+                } label: {
+                    ZStack{
+                        RoundedRectangle(cornerRadius: 4)
+                            .foregroundStyle(theme.mainColor)
+                        EventDetailView(eventName: eventName, eventTime: eventTime, theme: theme)
+                    }
+                }
             }
             else {
                 RoundedRectangle(cornerRadius: 4)
@@ -30,5 +37,5 @@ struct EventRectangle: View {
 }
 
 #Preview {
-    EventRectangle(height: 50, color: Color.purple, eventName: "Advanced Math", eventTime: "10:00 - 24:00", visible: true)
+    EventRectangle(onTap: { name in }, height: 50, theme: .cpurple, eventName: "Advanced Math", eventTime: "10:00 - 24:00", visible: true)
 }
