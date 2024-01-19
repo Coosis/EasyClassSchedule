@@ -15,14 +15,25 @@ struct Event : Identifiable, Codable{
     let from : Int
     let to : Int
     let theme : Theme
+
+    func getBounded(timeTable : [SectionTime]) -> (Int, Int) {
+        if(from > timeTable.count) { return (-1, -1) }
+        let bounded_to = min(timeTable.count, to);
+        var bounded_from = from;
+        if bounded_from > bounded_to { bounded_from = bounded_to }
+        if bounded_from < 0 { bounded_from = 0 }
+        return (bounded_from, bounded_to)
+    }
     
     func EventTimeString(timeTable : [SectionTime]) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .none
         formatter.timeStyle = .short
         
-        let start = formatter.string(from: timeTable[from-1].start)
-        let end = formatter.string(from: timeTable[to-1].start)
+        let (bfrom, bto) = getBounded(timeTable: timeTable)
+        if(from > timeTable.count) { return "???" }
+        let start = formatter.string(from: timeTable[bfrom-1].start)
+        let end = formatter.string(from: timeTable[bto-1].start)
         return "\(start)-\(end)"
     }
     
@@ -127,7 +138,9 @@ struct DayEventStructure : Identifiable, Codable{
         //future optimization needed
         var covered_section = Array(repeating: false, count: timeTable.count)
         for event in events {
-            for i in event.from...event.to {
+            let (bfrom, bto) = event.getBounded(timeTable: timeTable)
+            if(bfrom == -1 || bto == -1) { continue; }
+            for i in bfrom...bto {
                 covered_section[i-1] = true
             }
         }

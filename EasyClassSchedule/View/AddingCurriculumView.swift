@@ -11,7 +11,7 @@ struct AddingCurriculumView: View {
     @EnvironmentObject var store : ScheduleStore
     var preferences : Preferences
     var delete : Bool
-    let saveAction: ()->Void
+    let saveAction : ()->Void
     func deleteAction(){
         if let _ = store.curriculums[curriculumName] {
             store.curriculums.removeValue(forKey: curriculumName)
@@ -33,6 +33,12 @@ struct AddingCurriculumView: View {
             endingWeek = curriculum.endingWeek
             lectures = curriculum.lectures
             theme = curriculum.theme
+        }
+    }
+    
+    var filteredLectures : [Lecture] {
+        lectures.filter{ lecture in
+            return lecture.from <= store.timeTable.count
         }
     }
     
@@ -83,50 +89,54 @@ struct AddingCurriculumView: View {
                 }
             }
             Section("Lectures"){
-                ForEach(0...lectures.count-1, id: \.self) { i in
-                    HStack{
-                        Picker("On", selection: $lectures[i].day) {
-                            Text("Mon").tag(1)
-                            Text("Tue").tag(2)
-                            Text("Wen").tag(3)
-                            Text("Thu").tag(4)
-                            Text("Fri").tag(5)
-                            Text("Sat").tag(6)
-                            Text("Sun").tag(7)
-                        }
-                        .onChange(of: lectures[i].day) {
-                            newCurriculum.lectures = lectures
-                        }
-                        .pickerStyle(.wheel)
-                        .frame(maxHeight: 80)
-                        Text("From")
-                        Picker("", selection: $lectures[i].from) {
-                            ForEach(1...preferences.days, id: \.self) { i in
-                                Text("\(i)").tag(i)
+                if(filteredLectures.count > 0){
+                    ForEach(0...filteredLectures.count-1, id: \.self) { i in
+                        HStack{
+                            Picker("On", selection: $lectures[i].day) {
+                                Text("Mon").tag(1)
+                                Text("Tue").tag(2)
+                                Text("Wen").tag(3)
+                                Text("Thu").tag(4)
+                                Text("Fri").tag(5)
+                                Text("Sat").tag(6)
+                                Text("Sun").tag(7)
                             }
-                        }
-                        .onChange(of: lectures[i].from) {
-                            newCurriculum.lectures = lectures
-                        }
-                        .pickerStyle(.wheel)
-                        .frame(maxHeight: 80)
-                        Text("To")
-                        Picker("", selection: $lectures[i].to) {
-                            ForEach(lectures[i].from...preferences.days, id: \.self) { i in
-                                Text("\(i)").tag(i)
+                            .onChange(of: lectures[i].day) {
+                                newCurriculum.lectures = lectures
                             }
+                            .pickerStyle(.wheel)
+                            .frame(maxHeight: 80)
+                            Text("From")
+                            Picker("", selection: $lectures[i].from) {
+                                ForEach(1...store.timeTable.count, id: \.self) { i in
+                                    Text("\(i)").tag(i)
+                                }
+                            }
+                            .onChange(of: lectures[i].from) {
+                                newCurriculum.lectures = lectures
+                                if(lectures[i].to < lectures[i].from) { lectures[i].to = lectures[i].from }
+                            }
+                            .pickerStyle(.wheel)
+                            .frame(maxHeight: 80)
+                            Text("To")
+                            Picker("", selection: $lectures[i].to) {
+                                
+                                ForEach(lectures[i].from...store.timeTable.count, id: \.self) { i in
+                                    Text("\(i)").tag(i)
+                                }
+                            }
+                            .onChange(of: lectures[i].to) {
+                                newCurriculum.lectures = lectures
+                            }
+                            .pickerStyle(.wheel)
+                            .frame(maxHeight: 80)
                         }
-                        .onChange(of: lectures[i].to) {
-                            newCurriculum.lectures = lectures
-                        }
-                        .pickerStyle(.wheel)
-                        .frame(maxHeight: 80)
-                    }
-                    .swipeActions {
-                        Button(role: .destructive) {
-                            lectures.remove(at: i)
-                        } label: {
-                            Label("Delete", systemImage: "trash")
+                        .swipeActions {
+                            Button(role: .destructive) {
+                                lectures.remove(at: i)
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
                         }
                     }
                 }

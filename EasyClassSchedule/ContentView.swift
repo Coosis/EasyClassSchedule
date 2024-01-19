@@ -33,6 +33,60 @@ struct ContentView: View {
         addingCurriculum = true
     }
     
+    func clean_curriculum_notification(curriculum : Curriculum){
+        let prefix = curriculum.name
+        UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
+            let identifiersToDelete = requests.filter { $0.identifier.hasPrefix(prefix) }.map { $0.identifier }
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiersToDelete)
+        }
+    }
+    
+    func change_curriculum_notification(curriculum : Curriculum){
+        let content = UNMutableNotificationContent()
+        content.title = "\(curriculum.name)"
+        content.body = "is about to begin in \(store.preferences.headsup_min) minutes."
+        let calendar = Calendar.current;
+        
+        for lecture in curriculum.lectures {
+            for i in 0...curriculum.endingWeek - curriculum.startingWeek {
+                let daysToAdd = lecture.day;
+                //adding to start date to get correct date
+                if let newDate = calendar.date(byAdding: .day, value: (i*7)+daysToAdd, to: preferences.startingDate){
+                    // Extract date components
+                    var day_components = calendar.dateComponents([.year, .month, .day, .weekday], from: newDate)
+                    let hm_components = calendar.dateComponents([.hour, .minute], from: timeTable[lecture.from-1].start)
+                    day_components.hour = hm_components.hour
+                    day_components.minute = hm_components.minute
+                    
+                    let date = calendar.date(from: day_components) ?? newDate
+                    let minutesAgo = calendar.date(byAdding: .minute, value: -store.preferences.headsup_min, to: date) ?? date
+                    let components = calendar.dateComponents([.year, .month, .day, .weekday, .hour, .minute], from: minutesAgo)
+                    
+                    // Create the trigger as a non-repeating event.
+                    let trigger = UNCalendarNotificationTrigger(
+                        dateMatching: components, repeats: false)
+                    
+                    // Create the request
+                    let uuidString = curriculum.name + UUID().uuidString
+                    let request = UNNotificationRequest(identifier: uuidString,
+                                                        content: content, trigger: trigger)
+                    
+                    // Schedule the request with the system.
+                    let notificationCenter = UNUserNotificationCenter.current()
+                    notificationCenter.add(request) { (error) in
+                        if error != nil {
+                            // Handle any errors.
+                        }
+                    }
+                }
+                else {
+                    // Error handling
+                }
+            }
+        }
+
+    }
+    
     var body: some View {
         VStack {
             ScheduleHeaderView(editing: $editingSchedule, editAction: {
@@ -68,6 +122,12 @@ struct ContentView: View {
                                 store.preferences = preferences
                                 store.timeTable = timeTable
                                 editingSchedule = false
+                                
+                                for (_, c) in store.curriculums{
+                                    clean_curriculum_notification(curriculum: c)
+                                    change_curriculum_notification(curriculum: c)
+                                }
+                                
                                 saveAction()
                             }
                         }
@@ -87,7 +147,19 @@ struct ContentView: View {
                         ToolbarItem(placement: .confirmationAction){
                             Button("Done"){
                                 addingCurriculum = false
-                                store.curriculums[newCurriculum.name] = (newCurriculum)
+                                var occupied : [Bool] = Array(repeating: false, count: store.timeTable.count)
+                                for i in 0...newCurriculum.lectures.count-1{
+                                    for j in newCurriculum.lectures[i].from-1...newCurriculum.lectures[i].to-1{
+                                        if occupied[j] {
+                                            newCurriculum.lectures.remove(at: i)
+                                            break
+                                        }
+                                        else { occupied[j] = true }
+                                    }
+                                }
+                                store.curriculums[newCurriculum.name] = newCurriculum
+                                clean_curriculum_notification(curriculum: newCurriculum)
+                                change_curriculum_notification(curriculum: newCurriculum)
                                 saveAction()
                             }
                         }

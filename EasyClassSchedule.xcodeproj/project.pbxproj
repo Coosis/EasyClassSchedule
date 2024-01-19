@@ -31,6 +31,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F5161D932B57DB6D005C6857 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		F53D5D2C2B2D95DD002B5EEA /* ScheduleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleStore.swift; sourceTree = "<group>"; };
 		F53D5D2E2B2D9DF6002B5EEA /* ScheduleHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleHeaderView.swift; sourceTree = "<group>"; };
 		F53D5D322B2D9FE9002B5EEA /* ScheduleDetailFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDetailFormView.swift; sourceTree = "<group>"; };
@@ -85,6 +86,7 @@
 		F5579F932B2C37FD00EBE179 /* EasyClassSchedule */ = {
 			isa = PBXGroup;
 			children = (
+				F5161D932B57DB6D005C6857 /* Info.plist */,
 				F55CB6B72B2C4FB500DC41C1 /* Model */,
 				F5579FA22B2C383400EBE179 /* View */,
 				F5579F942B2C37FD00EBE179 /* EasyClassScheduleApp.swift */,
@@ -359,6 +361,7 @@
 				DEVELOPMENT_TEAM = 4Q7XSP4ZSU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = EasyClassSchedule/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -389,6 +392,7 @@
 				DEVELOPMENT_TEAM = 4Q7XSP4ZSU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = EasyClassSchedule/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

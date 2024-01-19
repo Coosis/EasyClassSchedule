@@ -54,6 +54,15 @@ struct ScheduleDetailFormView: View {
                 }
                 .pickerStyle(.navigationLink)
             }
+            Section("Minutes Before Alert"){
+                Picker("Minutes", selection: $preferences.headsup_min) {
+                    ForEach(0...60, id: \.self) { t in
+                        Text("\(t)")
+                    }
+                }
+                .pickerStyle(.wheel)
+                .frame(maxHeight: 80)
+            }
             Section("Sections"){
                 if timeTable.count > 0 {
                     ForEach(0...timeTable.count-1, id: \.self) { i in
@@ -75,10 +84,6 @@ struct ScheduleDetailFormView: View {
                         Text("Add Section")
                     }
                 }
-//                ScrollView{
-//                    LazyVStack(){
-//                    }
-//                }
             }
         }
     }

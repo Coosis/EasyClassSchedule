@@ -7,13 +7,27 @@
 
 import SwiftUI
 
-class Curriculum : Codable{
+final class Curriculum : Codable{
+    //to add a new property: 1. declare it  2. in init(from decoder : Decoder), add wrapper for default value. 3. in init(), add initialize logic.
     var name : String
     var startingWeek : Int
     var endingWeek : Int
     
     var lectures : [Lecture]
     var theme : Theme
+    
+    //called by JSONDecoder().decode(Curriculum.self, from: data)
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "Curriculum"
+        self.startingWeek = try container.decodeIfPresent(Int.self, forKey: .startingWeek) ?? 1
+        self.endingWeek = try container.decodeIfPresent(Int.self, forKey: .endingWeek) ?? 20
+        self.lectures = try container.decodeIfPresent([Lecture].self, forKey: .lectures) ?? []
+        self.theme = try container.decodeIfPresent(Theme.self, forKey: .theme) ?? Theme.cgreen
+        
+        //existingProperty = try container.decode(String.self, forKey: .existingProperty)
+        //newProperty = try container.decodeIfPresent(Int.self, forKey: .newProperty) ?? 0 // Default value for new property
+    }
     
     init(name : String, startingWeek: Int, endingWeek: Int, lectures : [Lecture], theme : Theme) {
         self.name = name

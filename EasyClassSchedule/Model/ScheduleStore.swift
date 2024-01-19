@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct Preferences : Codable{
+    //to add a new property: 1. declare it  2. in init(from decoder : Decoder), add wrapper for default value.  3. in init(), add initialize logic.
     let height : Double
     let spacing : Double
     var theme : Theme
+    var headsup_min : Int
     
     var enableWeekEnds : Bool
     var days : Int {
@@ -20,21 +22,44 @@ struct Preferences : Codable{
     var startingDate : Date
     var weeks : Int
     
+    //called by JSONDecoder().decode(Curriculum.self, from: data)
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.height = try container.decodeIfPresent(Double.self, forKey: .height) ?? 50
+        self.spacing = try container.decodeIfPresent(Double.self, forKey: .spacing) ?? 10
+        self.theme = try container.decodeIfPresent(Theme.self, forKey: .theme) ?? .cpurple
+        self.enableWeekEnds = try container.decodeIfPresent(Bool.self, forKey: .enableWeekEnds) ?? true
+        self.startingDate = try container.decodeIfPresent(Date.self, forKey: .startingDate) ?? {
+            let calendar = Calendar.current
+            var date = Date()
+            let componentsBefore = calendar.dateComponents([.year, .month, .day], from: date)
+            date = calendar.date(from: componentsBefore) ?? date
+            let components = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)
+            date = calendar.date(from: components) ?? date
+            return date
+        }()
+        self.headsup_min = try container.decodeIfPresent(Int.self, forKey: .headsup_min) ?? 10
+        self.weeks = try container.decodeIfPresent(Int.self, forKey: .weeks) ?? 20
+    }
+    
     init() {
         self.height = 50
         self.spacing = 10
-        self.enableWeekEnds = true
         self.theme = .cpurple
+        self.enableWeekEnds = true
+        
         let calendar = Calendar.current
         var date = Date()
-        var componentsBefore = calendar.dateComponents([.year, .month, .day], from: date)
-        componentsBefore.year = 2023
-        componentsBefore.month = 9
-        componentsBefore.day = 1
+        let componentsBefore = calendar.dateComponents([.year, .month, .day], from: date)
+//        componentsBefore.year = 2024
+//        componentsBefore.month = 9
+//        componentsBefore.day = 1
         date = calendar.date(from: componentsBefore) ?? date
         let components = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)
         date = calendar.date(from: components) ?? date
         self.startingDate = date
+        
+        self.headsup_min = 10
         self.weeks = 20
     }
 }
@@ -53,17 +78,17 @@ class ScheduleStore : ObservableObject {
     
     private static func curriculumsFileURL() throws -> URL {
         try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-            .appendingPathExtension("curriculums.data")
+            .appendingPathComponent("curriculums.data")
     }
     
     private static func timeTableFileURL() throws -> URL {
         try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-            .appendingPathExtension("timeTable.data")
+            .appendingPathComponent("timeTable.data")
     }
     
     private static func preferencesFileURL() throws -> URL {
         try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-            .appendingPathExtension("preferences.data")
+            .appendingPathComponent("preferences.data")
     }
     
     func load() async throws {
